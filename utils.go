@@ -31,13 +31,13 @@ func Finaliza() {
 
 const ESC = "\x1b"
 
-/* LimpaTela */
+/* limpaTela Limpa a tela e volta o cursor para a posição inicial. */
 func LimpaTela() {
   fmt.Printf("%s[2J", ESC)
   MoveCursor(Posicao{0,0})
 }
 
-/* Move o cursor para a posição p */
+/* MoveCursor Move o cursor para as coordendas definidas pela posição p */
 func MoveCursor(p Posicao) {
   fmt.Printf("%s[%d;%df", ESC, p.linha + 1, p.coluna + 1)
 }
