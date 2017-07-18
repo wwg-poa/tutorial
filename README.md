@@ -33,11 +33,74 @@ Sugestões de editores de texto:
 
 #### Instalação MacOS
 
-_TODO_
+Temos duas opções de como instalar o Go no MacOS: usando Homebrew ou o instalador de pacotes do MacOS.
+
+##### Instalando Homebrew (Opcional)
+
+O jeito mais simples de instalar o Go é usando o [Homebrew](https://brew.sh/), que é um gerenciador de pacotes para o MacOS. Para instalar o Homebrew basta rodar o seguinte comando no terminal:
+
+```
+/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+```
+
+O próprio script de intalação do Homebrew explica o que esta fazendo e pausa quando necessário.
+
+##### Instalando Go
+
+Caso você tenha instalado o Homebrew, basta rodar:
+
+```
+brew install go
+```
+
+Caso você tenha optado pelo instalador de pacotes do MacOS, abra a [página de downloads](https://golang.org/dl/) do Go procure pelo arquivo do instalador para MacOS e clique no link. Os arquivos serão instalados por padrão em `/usr/local/go`.
+
+Em ambos os casos, após a instalação a sua variável de ambiente `PATH` já deve conter o binário do go. Para que o comando possa ser utilizado é possível que você tenha que reiniciar as sessões do terminal que estão abertas.
+
+Para garantir que a instalação foi bem sucedida e que o Go foi instalado corretamente, basta rodar o comando `go version` e observar uma saída parecida com a seguinte:
+
+```
+❯ go version
+go version go1.8.1 darwin/amd64
+```
 
 #### Instalação Linux
 
-_TODO_
+##### Instalando Go
+
+Se você usa uma distribuição do Linux baseada no Debian, como o Ubuntu, basta rodar o seguinte comando:
+
+```
+sudo apt-get install golang-1.8-go
+```
+
+Para outras distribuições de linux o primeiro passo para instalar o Go é baixar o arquivo .tar.gz, para isso abra a [página de downloads](https://golang.org/dl/) do Go procure pelo link correto.
+
+Em seguida será necessário extrair o conteúdo do arquivo baixado em `/usr/local`, para criar uma árvore dos arquivos do Go em `/usr/local/go`.
+
+```
+sudo tar -C /usr/local -xzf go$VERSION.$OS-$ARCH.tar.gz
+```
+
+Por exemplo, se você baixou o arquivo `go1.8.1.linux-amd64.tar.gz`:
+```
+sudo tar -C /usr/local -xzf go1.8.1.linux-amd64.tar.gz
+```
+
+Finalmente, tanto para a instalação com `apt-get` quanto com o arquivo .tar.gz é necessário adicionar o binário do Go à sua variável de ambiente `PATH`. Para fazer isso adicione ao bash profile `$HOME/.profile` a linha seguinte:
+
+```
+export PATH=$PATH:/usr/local/go/bin
+```
+
+Para que o comando possa ser utilizado é possível que você tenha que reiniciar as sessões do terminal que estão abertas.
+
+Para garantir que a instalação foi bem sucedida e que o Go foi instalado corretamente, basta rodar o comando `go version` e observar uma saída parecida com a seguinte:
+
+```
+ubuntu@svartir-sandar:~$ go version
+go version go1.8.1 linux/amd64
+```
 
 #### Instalação Windows
 
@@ -68,16 +131,26 @@ C:\Users\Camila\Documents\GitHub> go version
 go version go1.8.1 windows/amd64
 ```
 
-##### Configurando o Workspace do Go
+### Configurando o Workspace do Go
 
 A linguagem Go necessita que todo o código Go esteja localizado em um único workspace. O workspace é uma pasta que contém três sub-pastas: uma pasta `src`, que contém todos os arquivos fonte em Go. Uma pasta `pkg`, que contém os objetos dos pacotes e uma pasta `bin` que contém os comandos executáveis. Para mais detalhes leia a [documentação](https://golang.org/doc/code.html#Workspaces) da linguagem.
 
-A localização do workspace é definido por uma varável de ambiente chamada `GOPATH`. A localização padrão dessa variável é `%USERPROFILE%\go` (geralmente C:\Users\SeuNome\go) no Windows. Nesse tutorial usaremos a localização padrão do workspace. Caso você deseje utilizar outro local será necessário alterar o valor do `GOPATH` para que seu programa funcione corretamente.
+A localização do workspace é definido por uma varável de ambiente chamada `GOPATH`. A localização padrão dessa variável é `%USERPROFILE%\go` (geralmente C:\Users\SeuNome\go) no Windows ou `$HOME/go` no caso do MacOS e Linux. Nesse tutorial usaremos a localização padrão do workspace. Caso você deseje utilizar outro local será necessário alterar o valor do `GOPATH` para que seu programa funcione corretamente.
 
 Para criar o workspace na localização padrão vá até a pasta home e crie a pasta `go`. Dentre as três sub-pastas do workspace, apenas a pasta `src` precisa ser criada:
 
+#### MacOS / Linux / Windows (usando Git Bash)
 ```
 cd ~
+mkdir go
+cd go
+mkdir src
+cd src
+```
+
+#### Windows (usando linha de comando do Windows)
+```
+cd %USERPROFILE%
 mkdir go
 cd go
 mkdir src
@@ -141,7 +214,7 @@ No Windows, o comando para executar é assim:
 tutorial.exe
 ```
 
-Você deve ter visto a mensagem "Olá Go" sendo impressa na tela. Estamos prontas para começar!
+Você deve ter visto a mensagem "Olá Go!" sendo impressa na tela. Estamos prontas para começar!
 
 ## Passo 02: Estrutura de um jogo
 
@@ -157,15 +230,26 @@ Como estamos emprestando a idéia do PacGo de um jogo clássico, vamos pular est
 
 **_Coach_: explicar brevemente o jogo Pac Man observando os aspectos de _game design_**
 
-Crie uma pasta chamada `pacgo` para separar o código do jogo dos outros arquivos. Lembra como fazer? Se não, volte na seção anterior.
+Digite no seu terminal o seguinte comando:
 
-Agora vamos criar o arquivo `main.go` onde vai ficar a parte principal do nosso programa. Abra o editor de textos, copie e cole o seguinte código:
+```
+go get github.com/wwg-poa/tutorial
+```
+
+Ele vai baixar automaticamente para você os arquivos iniciais deste projeto.
+
+Vá para a pasta `$GOHOME/src/github.com/wwg-poa/tutorial` e abra o arquivo `main.go` no seu editor de textos. Você deve ver o código abaixo:
+
 
 ```
 package main
 
+import "fmt"
+
 func main() {
   // Inicializar terminal
+  Inicializa()
+  defer Finaliza()
 
   // Inicializar labirinto
 
@@ -180,6 +264,9 @@ func main() {
     // Processa colisões
 
     // Dorme
+
+    fmt.Println("Olá Go!")
+    break // Temporário: quebra o loop infinito
   }
 }
 ```
@@ -188,13 +275,26 @@ Salve o arquivo. (Lembre-se sempre de salvar o arquivo após cada alteração!)
 
 **_Coach_: explicar o que são comentários, a função `main` e o que é um _loop_.**
 
-Note que o nosso programa não faz nada por enquanto (exceto entrar em _loop_ infinito). Isto é porque ainda não inserimos nenhum código no programa, este é apenas um esqueleto com comentários onde vamos colocar os principais componentes do jogo.
+Note que o nosso programa não faz nada diferente do programa anterior. Porém, nós incluimos alguns comentários com o objetivo de preparar o terreno para as próximas etapas e um _loop_ `for` para ser o nosso _loop_ principal do jogo.
 
-Para fazer um jogo nós precisamos nos preocupar com os seguintes detalhes:
+Além disso, logo no começo a função `main` incluímos as chamadas para as funções `Inicializa` e `Finaliza`. O objetivo destas funções é preparar o terminal para que ele entenda corretamente as instruções de impressão e os comandos do teclado, e restaurar ele para o modo anterior quando acabarmos (a palavra chave `defer` diz para o Go executar a função `Finaliza` por último).
 
+O código que faz isto é este aqui:
+
+```
+// Inicializar terminal
+Inicializa()
+defer Finaliza() // executa no final da função
+```
+
+Note que não definimos estas funções neste arquivo, elas foram definidas para você no arquivo `utils.go`. O entendimento destas funções não é necessário para este tutorial, mas caso fique curiosa fique a vontade para explorar este arquivo.
+
+Resumidamente, para fazer um jogo nós precisamos nos preocupar com os seguintes detalhes:
+
+- Preparar os recursos do computador (tela, teclado, etc)
 - Carregar os dados do jogo (no caso, o mapa e a posição de cada elemento no mapa)
-- Criar um loop principal (pois nós queremos que o jogo continue sempre funcionado até decidirmos que ele deve parar)
-- Dentro do loop:
+- Criar um _loop_ principal (pois nós queremos que o jogo continue sempre funcionado até decidirmos que ele deve parar)
+- Dentro do _loop_:
   - Desenhar o labirinto na tela
   - Processar o movimento do jogador (também chamado de entrada do usuário)
   - Processar o movimento dos fantasmas
@@ -212,45 +312,11 @@ Ao executar o `pacgo` você vai reparar que o programa parece ter **travado** o 
 
 A nossa primeira tarefa de codificação vai ser desenhar um labirinto na tela.
 
-Copie e cole o código abaixo logo após a linha `package main` (primeira linha do arquivo):
-
-```
-import "fmt"
-import "os"
-import "os/exec"
-import "time"
-```
-
 **_Coach_: explique em poucas palavras o que é um _import_ e o que são bibliotecas.**
 
-O nosso primeiro passo vai ser preparar o terminal para funcionar como a nossa tela. Para isto, precisamos utilizar algumas funções de baixo nível do sistema. Não se preocupe em tentar entender elas agora. Copie e cole as funções abaixo antes da definição da função `main`:
+Nós vamos criar uma representação do labirinto no programa. Para isso vamos utilizar uma `struct`. As _structs_ são a nossa forma de dizer que uma coisa possui várias partes, ou "propriedades". No caso, o nosso labirinto possui uma `largura`, uma `altura` e um `mapa`.
 
-```
-func inicializa() {
-  rawMode := exec.Command("/bin/stty", "cbreak", "-echo")
-  rawMode.Stdin = os.Stdin
-  _ = rawMode.Run()
-  rawMode.Wait()
-}
-
-func finaliza() {
-  rawMode := exec.Command("/bin/stty", "-cbreak", "echo")
-  rawMode.Stdin = os.Stdin
-  _ = rawMode.Run()
-  rawMode.Wait()
-}
-```
-
-Na função `main`, abaixo do comentário `// Inicializa terminal`, inclua as seguintes linhas de código:
-
-```
-inicializa()
-defer finaliza() // executa apenas no fim do programa
-```
-
-Agora nós vamos criar uma representação do labirinto no programa. Para isso vamos utilizar uma `struct`. As _structs_ são a nossa forma de dizer que uma coisa possui várias partes, ou "propriedades". No caso, o nosso labirinto possui uma `largura`, uma `altura` e um `mapa`.
-
-No arquivo `main.go` adicione o seguinte código entre a linha 1 e a linha 3:
+No arquivo `main.go` adicione o seguinte código abaixo de `import "fmt"`:
 
 ```
 type Labirinto struct {
@@ -297,7 +363,9 @@ func desenhaTela() {
 
 No mapa, o caractere `#` representa as nossas paredes. A letra `G` representa a posição inicial do nosso personagem (o PacGo) e o `F` representa a posição inicial de um fantasma.
 
-Agora altere a função `main` com a chamada para as duas funções criadas acima colocando-as logo abaixo dos respectivos comentários. Além disso coloque a palavra `break` abaixo do comentário `// Processa entrada do jogador`. O seu código vai ficar assim:
+Agora altere a função `main` para incluir a chamada para a função `inicializarLabirinto` antes do _loop_ principal. Dentro do _loop_ adicione a chamada para `desenhaTela`. Finalmente, remova a linha que imprime "Olá Go!".
+
+O código da função `main`deve ficar assim:
 
 ```
 func main() {
@@ -314,73 +382,77 @@ func main() {
     desenhaTela()
 
     // Processa entrada do jogador
-    break
 
     // Processa movimento dos fantasmas
 
     // Processa colisões
 
     // Dorme
+
+    break
   }
 }
 ```
 
-Execute agora o seu código:
+Vamos executá-lo, mas não esqueça de compilar o programa primeiro. No terminal:
 
 ```
-go run main.go
+go build
+./tutorial
 ```
 
-Note que ele imprimiu o labirinto e saiu do programa. Isso é porque colocamos a palavra `break` para quebrar o _loop_ infinito. Experimente tirar esta palavra e ver o que acontece. (Lembre-se que neste caso a combinação de teclas para parar o programa é `Ctrl+C`)
+Note que ele imprimiu o labirinto e saiu do programa. Isso é porque colocamos a palavra `break` para quebrar o _loop_ infinito.
 
-O que você deve ter observado é que sem a palavra `break` dentro do _loop_ (iniciado pela palavra-chave `for`) o programa imprime infinitas vezes o mesmo mapa e a tela fica "rolando" indefinidamente.
+## Passo 04: Adicionando a entrada do teclado
 
-Vamos corrigir este comportamento adicionando uma função para limpar a tela antes de imprimir o mapa. Copie e cole o código a seguir antes da sdeclaração da função `desenhaTela()`:
+Por enquanto nosso programa só imprime o labirinto e sai da tela. Nada muito emocionante, certo? Mas antes de começarmos a ver as animações, precisamos preparar um pouco mais o terreno e incluir uma forma do usuário interagir com o programa. Para isso precisamos que o nosso jogo reconheça os comandos do teclado.
 
-```
-type Posicao struct {
-  linha  int,
-  coluna int
-}
+Nós estamos particularmente interessadas em 5 teclas: a tecla ESC, que vai ser usada para sair do jogo, e as setas, que vão ser usadas para controlar o PacGo.
 
-func moveCursor(p Posicao) {
-  fmt.Printf("\x1b[%d;%df", p.linha, p.coluna)
-}
+Para o computador, cada tecla pressionada no teclado tem um valor númerico especial. Nós lemos qual tecla o usuário pressinou com a função `os.Stdin.Read`. O código abaixo faz a leitura apenas das teclas que nos interessam e dá nomes mais amigáveis para elas através do tipo `Entrada`.
 
-func limpaTela() {
-  fmt.Printf("\x1b[2J")
-  moveCursor( Posicao{0, 0} )
-}
-
-func dorme(milisegundos time.Duration) {
-  time.Sleep(time.Millisecond * milisegundos)
-}
-```
-
-O código acima define três funções auxiliares: `moveCursor()`, `limpaTela()` e `dorme()`.
-
-Pense no cursor como a "caneta" que escreve na tela. A função `moveCursor` diz para o computador onde é a próxima posição da tela onde ele deve escrever.
-
-A função `limpaTela` apaga todo o conteúdo do terminal e reposiciona o cursor na posição (0, 0), que é o canto superior esquerdo da tela.
-
-A função `dorme` serve para fazer o computador ficar parado por algum tempo sem processar nada. Nós vamos utilizar esta função para evitar que a tela seja atualizada muito rapidamente, o que causa o efeito da tela ficar piscando.
-
-**_Coach_: explicar como funciona o sistema de coordenadas da tela.**
-
-Não se preocupe com o código dentro das aspas na chamada de função `fmt.Printf()`. Estes são códigos de controle que têm funções especiais. Vale lembrar que pouca gente decora estes códigos - existem tabelas prontas na internet com a lista dos códigos e suas funções.
-
-Agora altere a função `desenhaTela()` para incluir uma chamada para `limpaTela()` antes de imprimir o mapa:
+Copie e cole o código abaixo logo após a linha 3 (`import "fmt"`):
 
 ```
-func desenhaTela() {
-  limpaTela() // adicione esta linha
-  for _, linha := range labirinto.mapa {
-    fmt.Println(linha)
+import "os"
+
+type Entrada int
+
+// Possiveis entradas do usuário
+const (
+  Nada = iota  
+  ParaCima
+  ParaBaixo
+  ParaEsquerda
+  ParaDireita
+  SairDoJogo // Tecla ESC
+)
+
+func leEntradaDoUsuario() Entrada {
+  var m Entrada
+  array := make([]byte, 10)
+
+  lido, _ := os.Stdin.Read(array)
+
+  if lido == 1 && array[0] == 0x1b {
+    m = SairDoJogo;
+  } else if lido == 3 {
+    if array[0] == 0x1b && array[1] == '[' {
+      switch array[2] {
+        case 'A': m = ParaCima
+        case 'B': m = ParaBaixo
+        case 'C': m = ParaDireita
+        case 'D': m = ParaEsquerda
+      }
+    }
   }
+  return m
 }
 ```
 
-Remova a palavra `break` do _loop_ principal e coloque a chamada `dorme(100)` logo após a linha com o comentário `// Dorme`. Este trecho do código vai ficar assim:
+Agora que nós sabemos quando o usuário pressionou a tecla `ESC`, podemos nos livrar do comando `break` no _loop_ principal e deixar o usuário decidir quando quer encerrar o programa.
+
+Altere o _loop_ principal para incluir a chamada para `leEntradaDoUsuario` conforme o código abaixo:
 
 ```
 // Loop principal
@@ -389,25 +461,56 @@ for {
   desenhaTela()
 
   // Processa entrada do jogador
+  m := leEntradaDoUsuario()
+  if m == SairDoJogo { break }
 
   // Processa movimento dos fantasmas
 
   // Processa colisões
 
   // Dorme
-  dorme(100)
 }
 ```
 
-Execute novamente o programa. Pode parecer que voltamos ao começo da lição, mas na verdade estamos prontas para fazer animações. A tela parece parada, mas está sendo atualizada 10 vezes por segundo, porém sempre com a mesma imagem.
+A linha `if m == SairDoJogo { break }` interrompe o jogo toda vez que você pressionar `ESC`. Experimente:
 
-Lembre-se de sair do programa com `Ctrl+C`.
+```
+go build
+./tutorial
+```
 
-## Passo 04: Mover o PacGo
+Você vai reparar que o jogo fica parado até você pressionar a tecla `ESC` sair. Porém, você também deve ter percebido que ao pressionar qualquer outra tecla o jogo imprime novamente o mapa logo abaixo do anterior.
+
+Isto acontece porque a cada passo do _loop_ o computador fica esperando você pressionar uma tecla, parando a execução na chamada da função `leEntradaDoUsuario`. Quando a tecla chega, ele "desprende" o programa e executa novamente o _loop_, passando por `desenhaTela`.
+
+Primeiro, vamos fazer a tela ser impressa corretamente.
+
+## Passo 05: Corrigindo a animação
+
+**_Coach_: explicar como funciona o sistema de coordenadas da tela.**
+
+Altere a função `desenhaTela()` para incluir uma chamada para `LimpaTela()` antes de imprimir o mapa:
+
+```
+func desenhaTela() {
+  LimpaTela() // adicione esta linha
+  for _, linha := range labirinto.mapa {
+    fmt.Println(linha)
+  }
+}
+```
+
+A função limpa tela garante que a tela remove todo o conteúdo do terminal e retorna o cursor para a posição (0, 0) para que o desenho seja feito sempre no mesmo lugar.
+
+Experimente executar o programa novamente. Lembre-se que a tecla para sair é `ESC`.
+
+Você deve reparar que agora o programa parece não responder a nenhuma tecla exceto a `ESC`... isto acontece na verdade porque nós ainda não programamos as outras teclas para fazer nada.
+
+## Passo 06: Mover o PacGo
 
 Agora que nós temos a estrutura de animação pronta, podemos começar a pensar em mover o nosso PacGo (atualmente representado pelo `G` no mapa).
 
-Para facilitar o controle do PacGo ao longo de todo o programa, vamos primeiro criar uma estrutura para representá-lo. Cole o código abaixo da definição da estrutura `Posicao`:
+Para facilitar o controle do PacGo ao longo de todo o programa, vamos primeiro criar uma estrutura para representá-lo. Cole o código antes da definição da função `leEntradaDoUsuario`:
 
 ```
 type PacGo struct {
@@ -425,7 +528,7 @@ func criarPacGo(posicao Posicao, figura string) {
 }
 ```
 
-Nós criamos a função para construir o PacGo (`criarPacGo`), mas falta chamar esta função dentro do nosso programa. Vamos alterar a função `inicializarLabirinto` para construir o PacGo com a sua posição correta no mapa.
+Agora vamos alterar a função `inicializarLabirinto` para construir o PacGo com a sua posição correta no mapa:
 
 ```
 func inicializarLabirinto() {
@@ -460,38 +563,27 @@ func inicializarLabirinto() {
 Com o PacGo criado podemos movimentá-lo. Copie e cole o código abaixo depois da definição da função `desenhaTela`:
 
 ```
-type Movimento int
-
-const (
-  Cima = iota
-  Baixo
-  Esquerda
-  Direita
-  Nenhum
-  Sair
-)
-
 func moverPacGo(m Movimento) {
   var novaLinha = pacgo.posicao.linha
   var novaColuna = pacgo.posicao.coluna
 
   switch m {
-    case Cima:
+    case ParaCima:
       novaLinha--
       if novaLinha < 0 {
         novaLinha = labirinto.altura - 1
       }
-    case Baixo:
+    case ParaBaixo:
       novaLinha++
       if novaLinha >= labirinto.altura {
         novaLinha = 0
       }
-    case Direita:
+    case ParaDireita:
       novaColuna++
       if novaColuna >= labirinto.largura {
         novaColuna = 0
       }
-    case Esquerda:
+    case ParaEsquerda:
       novaColuna--
       if novaColuna < 0 {
         novaColuna = labirinto.largura - 1
@@ -508,82 +600,575 @@ func moverPacGo(m Movimento) {
 
 A função `moverPacGo` recebe um sinal de movimento e tenta atualizar a posição atual do PacGo. Porém, se a nova posição cair numa parede (representada pelo caractere `#`) a função ignora o movimento.
 
-Agora precisamos definir a função que gera este sinal. Para saber a intenção de movimento da pessoa que está jogando nós precisamos saber que tecla ela pressionou. Este processo é chamado de "entrada do usuário".
+O próximo passo é alterar o programa principal para chamar esta função toda vez que alguém pressionar uma tecla.
 
-A função abaixo tem o objetivo de pegar a entrada do usuário e emitir um sinal de movimento. Copie e cole este código abaixo da definição da função `moverPacGo`:
+Altere o código abaixo do comentário `// Processa entrada do jogador` para o código a seguir:
 
 ```
-func entradaDoUsuario(canal chan<- Movimento) {
-  array := make([]byte, 10)
+// Processa entrada do jogador
+m := leEntradaDoUsuario()
 
-  for {
-    lido, _ := os.Stdin.Read(array)
+if m == SairDoJogo {
+  break
+} else {
+  moverPacGo(m)
+}
+```
 
-    if lido == 1 && array[0] == 0x1b {
-      canal <- Sair;
-    } else if lido == 3 {
-      if array[0] == 0x1b && array[1] == '[' {
-        switch array[2] {
-          case 'A': canal <- Cima
-          case 'B': canal <- Baixo
-          case 'C': canal <- Direita
-          case 'D': canal <- Esquerda
-        }
+O último passo vai ser alterar a função `desenhaTela` para atualizar a posição do PacGo a cada passada. Modifique o código desta função para que fique igual a função abaixo:
+
+```
+func desenhaTela() {
+  LimpaTela()
+
+  // Imprime mapa
+  for _, linha := range labirinto.mapa {
+    for _, char := range linha {
+      switch char {
+        case '#': fmt.Print("#")
+        default:  fmt.Print(" ")
       }
+    }
+    fmt.Println("")
+  }
+
+  // Imprime PacGo
+  MoveCursor(pacgo.posicao)
+  fmt.Printf("%s", pacgo.figura)
+
+  // Move cursor para fora do labirinto
+  MoveCursor(Posicao{labirinto.altura + 2, 0})
+}
+```
+**_Coach_: comentar o impacto das mudanças na função desenhaTela.**
+
+Compile o programa e execute-o. Você deve reparar que as setas movem o `G` na tela. Estamos fazendo progresso!
+
+Pressione `ESC` para sair.
+
+## Passo 07: Movendo os fantasmas
+
+Agora que o nosso PacGo é capaz de se mexer está na hora de animar os fantasmas. Vamos começar definindo uma estrutura para representar os fantasmas no código. Copie e cole a definição da `struct` Fantasma após a definição da `struct` PacGo:
+
+```
+type Fantasma struct {
+	posicao Posicao
+	figura  string
+}
+```
+
+Assim como para o PacGo a estrutura acima só define a "receita" para construir o fantasma. Precisamos também criar os fantasmas propriamente ditos. Como podem existir mais de um fantasma, ao invés de declarar um único objeto fantasma vamos declarar um _array_ de fantasmas.
+
+**_Coach_: explicar o que é um _array_.**
+
+Copie e cole o código abaixo da definição do PacGo:
+
+```
+var fantasmas []*Fantasma
+```
+
+Também precisamos de uma função para criar fantasmas. Copie e cole o código abaixo da função `criarPacGo`:
+
+```
+func criarFantasma(posicao Posicao, figura string) {
+	fantasma := &Fantasma{posicao: posicao, figura: figura}
+	fantasmas = append(fantasmas, fantasma)
+}
+```
+
+Precisamos alterar a função que inicializa o mapa (`inicializarLabirinto`) para chamar a função `criarFantasma` toda vez que encontrar um caractere `F`. Faça a modificação abaixo:
+
+```
+// Processa caracteres especiais
+for linha, linhaMapa := range labirinto.mapa {
+  for coluna, caractere := range linhaMapa {
+    switch( caractere ) {
+      case 'G': { criarPacGo(Posicao{linha, coluna}, "G") }
+      case 'F': { criarFantasma(Posicao{linha, coluna}, "F") }
     }
   }
 }
 ```
 
-O próximo passo é alterar o programa principal para chamar esta função toda vez que alguém pressionar uma tecla. Copie e cole o código abaixo na função `main`, após a chamada da função `inicializarLabirinto`:
+A estrutura para criar fantasmas está completa, mas ainda não temos o código que exibe eles. Para isso precisamos alterar a função `desenhaTela`:
 
 ```
-  canal := make(chan Movimento, 10)
-  go entradaDoUsuario(canal)
+// Imprime PacGo
+MoveCursor(pacgo.posicao)
+fmt.Printf("%s", pacgo.figura)
 
-  var tecla Movimento
-```
-
-Ainda na função `main`, copie e cole o código abaixo na dentro do _loop_ principal, abaixo do comentário `// Processa entrada do jogador`:
-
-```
-// Processa entrada do jogador
-select {
-  case tecla = <-canal:
-    moverPacGo(tecla)
-  default:
+// Imprime fantasmas
+for _, fantasma := range fantasmas {
+  MoveCursor(fantasma.posicao)
+  fmt.Printf("%s", fantasma.figura)
 }
-if tecla == Sair { break }
+
+// Move cursor para fora do labirinto
+MoveCursor(Posicao{labirinto.altura + 2, 0})
 ```
 
-O último passo vai ser alterar a função `desenhaTela` para atualizar a posição do PacGo a cada passada:
+O último passo é o código que move os fantasmas.  Crie a função abaixo depois da definição da função `moverPacGo`:
+
+```
+func moverFantasmas() {
+  for _, fantasma := range fantasmas {
+    // gera um número aleatório entre 0 e 4 (ParaDireita = 3)
+    var direcao = rand.Intn(ParaDireita+1)
+
+    var novaPosicao = fantasma.posicao
+
+    // Atualiza posição testando os limites do mapa
+    switch direcao {
+    case ParaCima:
+      novaPosicao.linha--
+      if novaPosicao.linha < 0 { novaPosicao.linha = labirinto.altura - 1 }
+    case ParaBaixo:
+      novaPosicao.linha++
+      if novaPosicao.linha > labirinto.altura - 1 { novaPosicao.linha = 0 }
+    case ParaEsquerda:
+      novaPosicao.coluna--
+      if novaPosicao.coluna < 0 { novaPosicao.coluna = labirinto.largura - 1 }
+    case ParaDireita:
+      novaPosicao.coluna++
+      if novaPosicao.coluna > labirinto.largura - 1 { novaPosicao.coluna = 0 }
+    }
+
+    // Verifica se a posição nova do mapa é válida
+    conteudoMapa := labirinto.mapa[novaPosicao.linha][novaPosicao.coluna]
+    if conteudoMapa != '#' { fantasma.posicao = novaPosicao }
+  }
+}
+```
+
+Como nós estamos utilizando a função `rand.Intn` do pacote `rand` precisamos adicionar o respectivo `import`:
+
+```
+import "math/rand"
+```
+
+E adicione a chamada para esta função abaixo do comentário `// Processa movimento dos fantasmas` no _loop_ principal:
+
+```
+// Processa movimento dos fantasmas
+moverFantasmas()
+```
+
+Compile o programa e utilize as setas para mover o PacGo. Você vai reparar que o `F` que representa o nosso fantasma vai se mover toda vez que você pressionar uma tecla.
+
+Experimente adicionar mais um fantasma no mapa para ver o que acontece.
+
+## Passo 08: Corrigindo o movimento
+
+**_Coach_: Explicar porque o movimento dos fantasmas só ocorre após pressionar uma tecla.**
+
+Você deve ter reparado na seção anterior que o nosso jogo "trava" esperando o usuário pressionar uma tecla. Num jogo de verdade é esperado que o movimento dos inimigos seja independente do movimento do jogador. Nós precisamos separar o código que lê as teclas pressionadas pelo usuário do código do _loop_ principal.
+
+**_Coach_: Explicar brevemente os conceitos de _goroutine_ e _canais_.**
+
+Para conseguir este objetivo, vamos utilizar o conceito de `goroutines` e canais (`channels`). A função de uma _goroutine_ é justamente executar um código separado do código principal.
+
+Porém, como ele vai estar separado, é preciso ter uma maneira de comunicar com o código principal (por exemplo, para informar qual tecla foi pressionada). É aí que entram os canais: são formas de comunicação entre dois códigos que estão executando em paralelo.
+
+Altere a função `leEntradaDoUsuario` para ter a seguinte forma:
+
+```
+func leEntradaDoUsuario(canal chan<- Entrada) {
+	array := make([]byte, 10)
+
+	for {
+		lido, _ := os.Stdin.Read(array)
+
+		if lido == 1 && array[0] == 0x1b {
+			canal <- SairDoJogo
+		} else if lido == 3 {
+			if array[0] == 0x1b && array[1] == '[' {
+				switch array[2] {
+				case 'A': canal <- ParaCima
+				case 'B':	canal <- ParaBaixo
+				case 'C':	canal <- ParaDireita
+				case 'D': canal <- ParaEsquerda
+				}
+			}
+		}
+	}
+}
+```
+
+Repare nas seguintes mudanças:
+
+1) a função agora recebe um parâmetro do tipo `chan<- Entrada` e não possui retorno.
+2) ao invés de gravar na variável `m`, a função grava na variável `canal` com o operador `<-` ao invés de `=`
+3) todo o código está envolto por um _loop_ infinito, o que quer dizer que uma vez chamada esta função vai executar repetidamente até o término do programa
+
+Agora vamos alterar a função `main` para chamar a função `leEntradaDoUsuario` como uma _goroutine_:
+
+```
+func main() {
+  // Inicializar terminal
+  Inicializa()
+  defer Finaliza()
+
+  // Inicializar labirinto
+  inicializarLabirinto()
+
+  // Cria rotina para ler entradas
+  canal := make(chan Movimento, 10)
+	go leEntradaDoUsuario(canal)
+
+  // Loop principal
+  for {
+    // Desenha tela
+    desenhaTela()
+
+    // Processa entrada do jogador
+    var tecla Entrada
+		select {
+		case tecla = <-canal:
+		default:
+		}
+
+    if tecla == SairDoJogo {
+      break
+    } else {
+      moverPacGo(tecla)
+    }
+
+    // Processa movimento dos fantasmas
+    moverFantasmas()
+
+    // Processa colisões
+
+    // Dorme
+  }
+}
+
+```
+
+Se você compilar e executar o programa agora, vai reparar que o movimento dos fantasmas não depende mais do movimento do PacGo. Porém, temos um efeito indesejado que é a tela ficar piscando rapidamente.
+
+Isto acontece porque o jogo não está mais "travando" na entrada do usuário antes de atualizar a tela e está atualizando ela o mais rápido possível.
+
+Tipicamente, para dar a ilusão de movimento, os jogos atualizam a tela do jogador várias vezes por segundo, onde cada uma destas telas apresenta uma imagem (também chamada de quadro ou _frame_) com uma pequena diferença em relação a anterior.
+
+Se atualizarmos a tela poucas vezes por segundo a animação vai parecer travada, mas se atualizarmos rápido demais ocorre o fenômeno de _flicker_ que é o que vocês devem ter percebido agora.
+
+O nosso jogo não possui uma animação muito complexa, então é suficiente atualizar a tela 10 vezes por segundo. O truque para fazer isso é a função `dorme`.
+
+Esta função faz com que o programa fique parado pelo número de milisegundos que passarmos como parâmetro. Passando o valor de 100 milisegundos nós conseguimos fazer com que o _loop_ principal seja executado 10 vezes por segundo.
+
+
+Você vai precisar do _import_ `time`:
+
+```
+import "time"
+```
+
+Adicione a declaração de `dorme` antes da função `main`:
+
+```
+func dorme(milisegundos time.Duration) {
+  time.Sleep(time.Millisecond * milisegundos)
+}
+```
+
+E adicione a sua chamada abaixo do comentário `// Dorme` dentro do _loop_ principal:
+
+```
+// Dorme
+dorme(100)
+```
+
+Teste novamente o programa. O efeito de _flicker_ deve ter sumido.
+
+## Passo 09: Melhorar o gráfico
+
+Nós já temos toda a funcionalidade básica do jogo pronta, mas ele ainda não se parece com um jogo de verdade. Para deixar o jogo com uma cara mais amigável, vamos utilizar emojis como os nossos gráficos!
+
+Na função `inicializarLabirinto`, vamos passar o código dos emojis no lugar das letras `G` e `F`:
+
+```
+    for coluna, caractere := range linhaMapa {
+      switch( caractere ) {
+        case 'G': { criarPacGo(Posicao{linha, coluna}, "\xF0\x9F\x98\x83") }
+        case 'F': { criarFantasma(Posicao{linha, coluna}, "\xF0\x9F\x91\xBB") }
+      }
+    }
+```
+
+Além disso, vamos substituir o símbolo `#` por paredes de verdade. Adicione o atributo `muro` na estrutura do labirinto:
+
+```
+type Labirinto struct {
+  largura       int
+  altura        int
+  mapa          []string
+  muro          string
+}
+```
+
+Agora na função `inicializarLabirinto`, inclua a inicialização da propriedade `muro` com uma chamada da função `FundoAzul` passando um espaço como parâmetro. A função `FundoAzul` está definida no arquivo `utils.go`.
+```
+  labirinto = Labirinto{
+    largura: 20,
+    altura : 10,
+    mapa   : []string{
+      "####################",
+      "#                 F#",
+      "#                  #",
+      "#                  #",
+      "#                  #",
+      "#                  #",
+      "#                  #",
+      "#                  #",
+      "#G                F#",
+      "####################",
+    },
+    muro   : FundoAzul(" "),
+  }
+```
+
+E na função `desenhaTela`, altere o código abaixo para imprimir o muro:
+
+```
+  // Imprime mapa
+  for _, linha := range labirinto.mapa {
+    for _, char := range linha {
+      switch char {
+        case '#': fmt.Print(labirinto.muro)
+        default:  fmt.Print(" ")
+      }
+    }
+    fmt.Println("")
+  }
+```
+
+Compile e execute o programa.
+
+## Passo 10: Adicionar pastilhas e pontos
+
+O nosso jogo está ganhando forma, mas para parecer um jogo mesmo, precisamos adicionar algumas funcionalidades. Primeiro, nós precisamos de um placar e uma forma do PacGo ganhar pontos.
+
+Vamos primeiro criar um campo para guardar os pontos na struct PacGo:
+
+```
+type PacGo struct {
+  posicao    Posicao
+  figura     string
+  pontos     int
+}
+```
+
+Depois vamos alterar a função `desenhaTela` para incluir a impressão do placar e as pastilhas no mapa:
 
 ```
 func desenhaTela() {
-  limpaTela() // adicione esta linha
+  LimpaTela()
+
+  // Imprime placar
+	MoveCursor(Posicao{0, 0})
+	placar := fmt.Sprintf("Pontos: %d", pacgo.pontos)
+	fmt.Println(Vermelho(Intenso(placar)))
+
+  // Ajuste para desenhar o mapa embaixo do placar
+  deslocamento := Posicao{2, 0}
+  MoveCursor(deslocamento)
+
+  // Imprime mapa
   for _, linha := range labirinto.mapa {
-    fmt.Println(linha)
+    for _, char := range linha {
+      switch char {
+        case '#': fmt.Print(labirinto.muro)
+        case '.': fmt.Print(".")
+        default:  fmt.Print(" ")
+      }
+    }
+    fmt.Println("")
   }
 
   // Imprime PacGo
-  moveCursor(pacgo.posicao)
+  MoveCursor(pacgo.posicao.Soma(deslocamento))
   fmt.Printf("%s", pacgo.figura)
 
+  // Imprime fantasmas
+	for _, fantasma := range fantasmas {
+		MoveCursor(fantasma.posicao.Soma(deslocamento))
+		fmt.Printf("%s", fantasma.figura)
+	}
+
   // Move cursor para fora do labirinto
-  moveCursor(Posicao{labirinto.altura + 2, 0})
+  MoveCursor(deslocamento.Soma(Posicao{labirinto.altura + 2, 0}))
 }
 ```
 
-## Passo 05: Mover os fantasmas
+Finalmente, altere o código da função `moverPacGo` onde está a lógica responsável por detectar paredes para incluir a contagem de pontos:
 
-## Passo 06: Melhorar o gráfico
+```
+  conteudoDoMapa := labirinto.mapa[novaLinha][novaColuna]
+  if conteudoDoMapa != '#' {
+    pacgo.posicao.linha = novaLinha
+    pacgo.posicao.coluna = novaColuna
 
-## Passo 08: Adicionar pastilhas e pontos
+		if conteudoDoMapa == '.' {
+		  pacgo.pontos += 10
 
-## Passo 09: Adicionar fim de jogo
-
-## Passo 10: Verificar colisões
+      // Remove item do mapa
+			linha := labirinto.mapa[novaLinha]
+			linha = linha[:novaColuna] + " " + linha[novaColuna+1:]
+			labirinto.mapa[novaLinha] = linha
+		}
+  }
+  ```
 
 ## Passo 11: Adicionar vidas
 
-## Passo 12: Adicionar cogumelos de força
+Nós temos um placar funcionando e o nosso PacGo pode ganhar pontos, mas os fantasmas ainda não são uma ameaça. Está na hora de tornar o jogo um pouco mais difícil: vamos incluir a contagem de vidas e a possibilidade dos fantasmas matarem o PacGo.
+
+Toda vez que o PacGo morre ele deve voltar para o seu ponto de origem no mapa. Por isso, precisamos guardar a posição onde ele inicia. Vamos adicionar o número de vidas e a posicição inicial na estrutura `PacGo`:
+
+```
+type PacGo struct {
+  posicao    Posicao
+  posInicial Posicao
+  figura     string
+  pontos     int
+  vidas      int
+}
+```
+
+Na criação do `PacGo` salvamos a posicição inicial e configuramos o número inicial de vidas:
+
+```
+func criarPacGo(pos Posicao, fig string) {
+  pacgo = PacGo{
+    posicao: pos,
+    posInicial: pos,
+    figura: fig,
+    vidas: 2,
+  }
+}
+```
+
+E modificamos o placar para mostrar as vidas:
+
+```
+  // Imprime placar
+	MoveCursor(Posicao{0, 0})
+	placar := fmt.Sprintf("Pontos: %d Vidas: %d", pacgo.pontos, pacgo.vidas)
+	fmt.Println(Vermelho(Intenso(placar)))
+```
+
+Agora só falta adicionar a lógica da colisão com os fantasmas. Primeiro vamos criar uma função para buscar um fantasma na posição atual do PacGo:
+
+```
+func detectarColisao() *Fantasma {
+	for _, fantasma := range fantasmas {
+		if fantasma.posicao == pacgo.posicao {
+			return fantasma
+		}
+	}
+	return nil
+}
+```
+
+E no loop principal adicione o seguinte código para processar a colisão:
+
+```
+		// Processa colisões
+		if fantasma := detectarColisao(); fantasma != nil {
+			pacgo.vidas--
+			if pacgo.vidas < 0 {
+				MoveCursor(Posicao{labirinto.altura + 3, 0})
+				fmt.Print("Fim de jogo! Os fantasmas venceram... \xF0\x9F\x98\xAD\n\n")
+				break
+			}
+			// Reseta posição do PacGopher para a posição inicial
+			pacgo.posicao = pacgo.posInicial
+		}
+```
+
+Compile o código e execute para ver o resultado!
+
+## Passo 12: Vencendo o jogo
+
+Na etapa passada nós adicionamos o suporte a vidas, o que permite que o jogador perca o jogo caso acabem todas as suas vidas. Agora precisamos dar condições para que o jogador vença a partida.
+
+O jogo acaba quando o PacGo come todas as pastilhas do labirinto. Para fazer isso, nós precisamos contar quantas pastilhas temos no total e quando este número chegar a zero a partida acabou e o PacGo venceu.
+
+A maneira mais fácil de fazer isso é manter um contador de pastilhas na estrutura labirinto, inicializar com o total de pastilhas no momento da criação do labirinto e decrementar este número toda vez que o PacGo comer uma pastilha.
+
+### Criando o contador
+
+Na estrutura `Labirinto`:
+
+```
+type Labirinto struct {
+	largura      int
+	altura       int
+	mapa         []string
+	muro         string
+	numPastilhas int
+}
+```
+
+Na função `inicializarLabirinto`:
+
+```
+	// Processa caracteres especiais
+	for linha, linhaMapa := range labirinto.mapa {
+		for coluna, caractere := range linhaMapa {
+			switch caractere {
+			case 'G':
+				criarPacGo(Posicao{linha, coluna}, "\xF0\x9F\x98\x83")
+			case 'F':
+				criarFantasma(Posicao{linha, coluna}, "\xF0\x9F\x91\xBB")
+			case '.':
+				labirinto.numPastilhas++
+			}
+		}
+	}
+```
+
+### Decrementando o contator
+
+Na função `moverPacGo`:
+
+```
+	conteudoDoMapa := labirinto.mapa[novaLinha][novaColuna]
+	if conteudoDoMapa != '#' {
+		pacgo.posicao.linha = novaLinha
+		pacgo.posicao.coluna = novaColuna
+
+		if conteudoDoMapa == '.' {
+			pacgo.pontos += 10
+      labirinto.numPastilhas--
+
+			// Remove item do mapa
+			linha := labirinto.mapa[novaLinha]
+			linha = linha[:novaColuna] + " " + linha[novaColuna+1:]
+			labirinto.mapa[novaLinha] = linha
+		}
+	}
+```
+
+### Adicionando fim de jogo (vitória)
+
+No _loop_ principal, adicione o seguinte teste:
+
+```
+		// Fim de jogo
+		if labirinto.numPastilhas == 0 {
+			MoveCursor(Posicao{labirinto.altura + 3, 0})
+			fmt.Print("Fim de jogo! Você venceu! \xF0\x9F\x98\x84")
+			break
+		}
+```
+
+Compile e teste! :)
+
+## Passo 13: Power Ups
+
+_TODO_
+
+## Passo 14: Suporte a novos mapas
+
+_TODO_

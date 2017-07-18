@@ -13,6 +13,11 @@ type Posicao struct {
   coluna int
 }
 
+/* Aplica um deslocamento na posição. */
+func (pos1 *Posicao) Soma(pos2 Posicao) Posicao {
+	return Posicao{pos1.linha + pos2.linha, pos1.coluna + pos2.coluna}
+}
+
 /* Inicializa prepara o terminal para funcionar como base do jogo. */
 func Inicializa() {
   rawMode := exec.Command("/bin/stty", "cbreak", "-echo")
