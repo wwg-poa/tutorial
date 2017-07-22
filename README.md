@@ -1273,8 +1273,19 @@ Para que o jogador saiba que ainda está sobre o efeito da pílula, vamos mudar 
 
 Nosso jogo está quase completo! Vamos agora para a última etapa, que é suportar mapas externos. Para isso vamos precisar ler arquivos do disco e carregá-los em memória.
 
+### Adicionando imports
+
+```
+   import "bufio"
+   
+   import "errors"
+   
+   import "log"
+```
+
 ### Lendo o parâmetro do programa
 
+      Modificar o seguinte na função main:
 ```
 	// Lê parâmetros do sistema operacional
 	args := os.Args[1:]
