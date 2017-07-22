@@ -1204,7 +1204,7 @@ func desativarPilula(milisegundos time.Duration) {
 		// Processa colisões
 		if fantasma := detectarColisao(); fantasma != nil {
 			if pacgo.pilula {
-				go ressucitarFantasma(fantasma)
+				go ressucitarFantasma(fantasma, 10000)
 				matarFantasma(fantasma)
 				pacgo.pontos += 500
 			} else {
