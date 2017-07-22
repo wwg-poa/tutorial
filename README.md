@@ -370,8 +370,8 @@ O código da função `main`deve ficar assim:
 ```
 func main() {
   // Inicializar terminal
-  inicializa()
-  defer finaliza() // executa apenas no fim do programa
+  Inicializa()
+  defer Finaliza() // executa apenas no fim do programa
 
   // Inicializar labirinto
   inicializarLabirinto()
