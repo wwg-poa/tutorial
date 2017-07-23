@@ -1121,6 +1121,8 @@ Na função `moverPacGo`:
 	}
 ```
 
+### Modifique seu mapa! Antes de adicionar o fim do jogo, adicione pastilhas (pontos) ao seu mapa.
+
 ### Adicionando fim de jogo (vitória)
 
 No _loop_ principal, adicione o seguinte teste:
